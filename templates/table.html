@@ -1,302 +1,338 @@
-﻿<html>
+<html>
 <head>
-    <title>Table's image</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css') }}"></link>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
-    <script type=text/javascript src="{{url_for('static', filename='jquery-3.2.0.min.js') }}"></script>
-    <script type="text/javascript" src="{{url_for('static', filename='d3.min.js') }}"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type=text/javascript>
-      let $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    </script> 
+  <title>Table's image</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css"
+  href="{{url_for('static', filename='style.css') }}"></link>
+  <link rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  </link>
+  <script type=text/javascript
+  src="{{url_for('static', filename='jquery-3.2.0.min.js') }}"></script>
+  <script type="text/javascript"
+  src="{{url_for('static', filename='d3.min.js') }}"></script>
+  <script src=
+  "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
+  </script>
+  <script type=text/javascript>
+    let $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  </script>
 </head>
-    <body>
-        <div class="jumbotron text-center">
-            <h1>Image to Excel</h1>
-            <p>Voici le tableau de l'image :</p>
-        </div>
-        <div class="container">
-            <!-- affiche le tableau -->
-            <div class="span12 centered-text">
-                <caption><h1>Mon tableau</h1><caption>
-            </div>
-            <div class="row">
-                <table>
-                {% for i in range(result[2]) %}
-                    {% for key, value in result[0][i].iteritems() %}
-                        <tr>
-                            <td class="centrer col-sm-1">{{ key }}</td>
-                            {% for j in range(result[1]) %}
-                                {% if i == 0 %}
-                                    <td class="centrer1 col-sm-1">{{ value[j] }}</td>
-                                {% elif i == 1 %}
-                                    <th class="col-sm-1">{{ value[j] }}</th>
-                                {% else %}
-                                    {% if j == 0 %}
-                                        <th class="col-sm-1"> {{ value[j] }} </th>
-                                    {% else %}
-                                        <td class= "avec_bord col-sm-1"> {{ value[j] }} </td>
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                {% endfor %}    
-                </table>
-                </div>
-                <br />
-                <!-- script pour telecharger doc excel -->
-                <script type=text/javascript>
-                $(function() {
-                    $("#submitBtn").click(function() {
-                         $.ajax({
-                            type: "GET",
-                            url: $SCRIPT_ROOT + "/upload",
-                            contentType: "application/json; charset=utf-8",
-                            data: {
-                                list_text : "{{ result[4] }}",
-                                nb_column : {{ result[1] }},
-                                path_name : "{{ result[3] }}",
-                            },
-                            success: function(data) {
-                                $('#echoResult').text(data.value);
-                            }
-                        });     
-                    });
-                });
-                </script>
-            <!-- bouton pour telecharger -->
-            <div class="row">
-                <div class="col-lg-12">
-                    Appuyez sur le bouton pour telecharger le tableau Excel (.xls) : 
-                    <button type='button' id='submitBtn' name='submitBtn'>Telecharger</button>
-                </div>
-            </div>
-            <!-- affiche le resultat du telechargement -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <strong><div id='echoResult'></div></strong>
-                </div>
-            </div>
-            
-            <br /><br />
-            
-            <!-- selectionne la colonne du tableau a transformer en graphique -->
-            <h4>Selectionnez le nom de la colonne que vous voulez annalyser :</h4>
-            <form NAME="Colonne">
-            <select NAME="Liste">
-            <option>Choisir une option
-            {% for key, value in result[0][1].iteritems() %}
+  <body>
+    <div class="jumbotron text-center">
+      <h1>Image to Excel</h1>
+      <p>Voici le tableau de l'image :</p>
+    </div>
+    <div class="container">
+      <!-- affiche le tableau -->
+      <div class="span12 centered-text">
+        <caption><h1>Mon tableau</h1><caption>
+      </div>
+      <div class="row">
+        <table>
+          {% for i in range(result[2]) %}
+            {% for key, value in result[0][i].iteritems() %}
+              <tr>
+                <td class="centrer col-sm-1">{{ key }}</td>
                 {% for j in range(result[1]) %}
-                    {% if j > 0 %}
-                        <option>{{ value[j] }}</br>
+                  {% if i == 0 %}
+                    <td class="centrer1 col-sm-1">{{ value[j] }}</td>
+                  {% elif i == 1 %}
+                    <th class="col-sm-1">{{ value[j] }}</th>
+                  {% else %}
+                    {% if j == 0 %}
+                      <th class="col-sm-1"> {{ value[j] }} </th>
+                    {% else %}
+                      <td class= "avec_bord col-sm-1"> {{ value[j] }} </td>
                     {% endif %}
-                {% endfor %}    
+                  {% endif %}
+                {% endfor %}
+              </tr>
             {% endfor %}
-            </select>
-            </form>
-            
-            <!-- selectionne la ligne du tableau a supprimer du graphique -->
-            <h4>Cocher les ligne que vous voulez supprimer :</h4>
-            <div class="row">
-            <form NAME="Ligne">
-            
-            {% for i in range(result[2]) %}
-                {% for key, value in result[0][i].iteritems() %}
-                    {% if i > 1 %}
-                        <div class="col-sm-4"><input type="checkbox" checked="checked">{{ value[0] }}</div>
-                    {% endif %}
-                {% endfor %}    
-            {% endfor %}  
-                   
-            </form>
-            </div>
-            
-            <!-- bouton qui affiche le graphique -->
-            <button type="button" onclick="display_graph()">Submit</button>
-            <br />
-            <p id="demo"></p>
-            <br />
-            <!-- le graphique s'affiche ici -->
-            <div1></div1>
-            <br />
-                  
-            <!-- script qui affiche le graphique en d3 -->
-            <script>
-                function display_graph() {
-                    let text;
-                    col = document.Colonne.Liste.selectedIndex;
-                    
-                    let ligne = document.Ligne;
-                    let ligne_del = [];
-                    let i;
-                    for (i = 0; i < ligne.length; i++) {
-                        if (ligne[i].checked == 0) {
-                            ligne_del.push(i+2);
-                        }
-                    }
-                    
-                    d3.select("svg").remove();
-                    if ( col < 1 ) {
-                        text = "Input not valid";
-                        document.getElementById("demo").innerHTML = text;
-                    } else {
-                        text = "Input OK";
-                        document.getElementById("demo").innerHTML = text;
-                        
-                        let dataset=[];
-                        
-                            {% for i in range(result[2]) %}
-                            
-                                {% if i == 1 %}
-                                    {% for key, value in result[0][i].iteritems() %}
-                                        let x = [];
-                                        {% for j in value %}
-                                            x.push( "{{ j }}" );
-                                        {% endfor %}
-                                        let titre_graph = x[col];
-                                    {% endfor %}
-                                     
-                                {% elif i > 1%}
-                                    if ( ligne_del.indexOf( {{i}} ) < 0 ) {
-                                        {% for key, value in result[0][i].iteritems() %}
-                                            let x = [];
-                                            {% for j in value %}
-                                                x.push( "{{ j }}" );
-                                            {% endfor %}
-                                            dataset.push(["{{ value[0] }}", Number(x[col])]);
-                                        {% endfor %}
-                                    }
-                                {% endif %}
-                            {% endfor %} 
-                        
-                        let dataset1=[];
-                            {% for i in range(result[2]) %}
-                                {% if i > 1%}
-                                    if ( ligne_del.indexOf( {{i}} ) < 0 ) {
-                                        {% for key, value in result[0][i].iteritems() %}
-                                            dataset1.push("{{ value[0] }}");
-                                        {% endfor %}
-                                    }
-                                {% endif %}
-                            {% endfor %} 
+          {% endfor %}
+        </table>
+      </div>
+      <br />
+      <!-- script pour telecharger doc excel -->
+      <script type=text/javascript>
+      $(function() {
+        $("#submitBtn").click(function() {
+          $.ajax({
+            type: "GET",
+            url: $SCRIPT_ROOT + "/upload",
+            contentType: "application/json; charset=utf-8",
+            data: {
+              list_text : "{{ result[4] }}",
+                nb_column : {{ result[1] }},
+                path_name : "{{ result[3] }}",
+              },
+              success: function(data) {
+                $('#echoResult').text(data.value);
+              }
+          });
+        });
+      });
+      </script>
+      <!-- bouton pour telecharger -->
+      <div class="row">
+        <div class="col-lg-12">
+          Appuyez sur le bouton pour telecharger le tableau Excel (.xls) :
+          <button type='button' id='submitBtn' name='submitBtn'>Telecharger
+          </button>
+        </div>
+      </div>
+      <!-- affiche le resultat du telechargement -->
+      <div class="row">
+        <div class="col-lg-12">
+          <strong><div id='echoResult'></div></strong>
+        </div>
+      </div>
 
-                        // Largeur et hauteur
-                        const w = 1200;
-                        const h = 600;
-                        const padding = 40; // marge pour pas que le rond sorte du SVG
+      <br /><br />
 
-                        let y_min = 0;
-                        if(d3.min(dataset, function(d) {return d[1]})<0){y_min = d3.min(dataset, function(d) {return d[1]}) - 0}; // j'aimerai un min rond...
-                        
-                        let yScale = d3.scaleLinear()
-                            .domain([y_min, d3.max(dataset, function(d) {return d[1]})])
-                            .range([h - (5*padding), padding]);
+      <!-- selectionne la colonne du tableau a transformer en graphique -->
+      <h4>Selectionnez le nom de la colonne que vous voulez annalyser :</h4>
+      <form NAME="Colonne">
+        <select NAME="Liste">
+          <option>Choisir une option
+          {% for key, value in result[0][1].iteritems() %}
+            {% for j in range(result[1]) %}
+              {% if j > 0 %}
+                <option>{{ value[j] }}</br>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </select>
+      </form>
 
-                        let xScale = d3.scaleBand()
-                            .domain(dataset1)
-                            .range([padding, w-padding]);
-
-                        // Définit l'axe X
-                        let xAxis = d3.axisBottom(xScale);
-
-                        // Définit l'axe Y
-                        let yAxis = d3.axisLeft(yScale)
-                                      .ticks(10);
-                        console.log(dataset1.length)
-                        // Crée l'élément SVG
-                        let svg = d3.select("div1")
-                                    .append("svg")
-                                    .attr("width", w)
-                                    .attr("height", h);
-                                                    
-                        // ajout axe X
-                        svg.append("g")
-                               .attr("transform", "translate(0," + (h - (5*padding)) + ")")  
-                               .call(xAxis)
-                                .selectAll("text") 
-                                .style('text-anchor', 'start')
-                                .attr('transform', 'rotate(45 -2 10)');
-
-                        // ajout axe Y
-                        svg.append("g")
-                               .attr("transform", "translate(" + padding + ",0)")
-                               .call(yAxis); 
-                               
-                        svg.selectAll("text")
-                               .data(titre_graph)
-                               .enter()
-                               .append("text")
-                               .text("Titre : "+titre_graph)
-                               .attr("x", 10)
-                               .attr("y", 20)
-                                 .attr("font-family", "sans-serif")
-                                 .attr("font-size", "21px")
-                                 .attr("fill", "red");
-                        
-                        let infos = svg.append("text")
-                                              .attr("id", "infos")
-                                              .attr("x", 800)
-                                              .attr("y", 40);
-                        
-                        let with_rect = ((w -(2*padding))/dataset.length)-(padding/dataset.length);
-                        let echelleCouleurs = d3.scaleOrdinal(d3.schemeCategory20);
-                        
-                        svg.selectAll("rect")
-                           .data(dataset)
-                           .enter()
-                           .append("rect")
-                          .attr("x", function(d) { return xScale(d[0])+w/(2*dataset.length)-with_rect/2; })
-                          .attr("width", with_rect)
-                          .attr("y", function(d) { return yScale(d[1]); })
-                          .attr("height", function(d) { return h - (5*padding) - yScale(d[1]); })
-                          .style("fill",function(d){return echelleCouleurs(d[0]);})
-                            // ajout du hover
-                            .on("mouseover",function(d){
-                                infos.text( d[0]+", "+d[1])
-                                     .style("fill", echelleCouleurs(d[0]));
-                            })
-                            .on("mouseout",function(d){
-                                infos.text("");
-                            });
-                    }
-                }
-            </script> 
-        </div>   
-        <!-- Comme la page d'accueil -->
-        <div class="jumbotron text-center">
-            <h3>Convertir une nouvelle image :</h3>
-        </div> 
-        <div class="span12 centered-text">
-            <!-- affiche la fenetre patienter -->           
-            <!-- The Modal -->
-            <div id="myModal" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h3>Veuillez patienter...</h3>
-                    <img src="http://www.gif-maniac.com/gifs/51/50646.gif" alt="http://www.gif-maniac.com/gifs/51/50646.gif" class="transparent">
+      <!-- selectionne la ligne du tableau a supprimer du graphique -->
+      <h4>Cocher les ligne que vous voulez supprimer :</h4>
+      <div class="row">
+        <form NAME="Ligne">
+          {% for i in range(result[2]) %}
+            {% for key, value in result[0][i].iteritems() %}
+              {% if i > 1 %}
+                <div class="col-sm-4"><input type="checkbox" checked="checked">
+                {{ value[0] }}
                 </div>
-            </div>
-            <!-- bouton pour lancer l'application -->
-            <form onsubmit = "return OpenModal();" action = "http://localhost:5000/table" method = "POST" enctype = "multipart/form-data">
-                <br />
-                <section class="invert">
-                <input type = "image" src="{{url_for('static', filename='test.jpg')}}"/>
-                </section>
-            </form>
-            <p>Choisir un fichier 'jpg' ou 'png' à convertir en tableau excel</p>
-            <p>/!\ Ceci peut prendre quelques minutes... /!\</p>   
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </form>
+      </div>
+
+      <!-- bouton qui affiche le graphique -->
+      <button type="button" onclick="display_graph()">Submit</button>
+      <br />
+      <p id="demo"></p>
+      <br />
+      <!-- le graphique s'affiche ici -->
+      <div1></div1>
+      <br />
+
+      <!-- script qui affiche le graphique en d3 -->
+      <script>
+        function display_graph() {
+          let text;
+          col = document.Colonne.Liste.selectedIndex;
+
+          let ligne = document.Ligne;
+          let ligne_del = [];
+          let i;
+          for (i = 0; i < ligne.length; i++) {
+            if (ligne[i].checked == 0) {
+              ligne_del.push(i+2);
+            }
+          }
+
+          d3.select("svg").remove();
+          if ( col < 1 ) {
+            text = "Input not valid";
+            document.getElementById("demo").innerHTML = text;
+          }
+          else {
+            text = "Input OK";
+            document.getElementById("demo").innerHTML = text;
+            let dataset=[];
+            {% for i in range(result[2]) %}
+              {% if i == 1 %}
+                {% for key, value in result[0][i].iteritems() %}
+                  let x = [];
+                  {% for j in value %}
+                    x.push( "{{ j }}" );
+                  {% endfor %}
+                  let titre_graph = x[col];
+                {% endfor %}
+              {% elif i > 1%}
+                if ( ligne_del.indexOf( {{i}} ) < 0 ) {
+                  {% for key, value in result[0][i].iteritems() %}
+                    let x = [];
+                    {% for j in value %}
+                      x.push( "{{ j }}" );
+                    {% endfor %}
+                    dataset.push(["{{ value[0] }}", Number(x[col])]);
+                  {% endfor %}
+                }
+              {% endif %}
+            {% endfor %}
+            let dataset1=[];
+            {% for i in range(result[2]) %}
+              {% if i > 1%}
+                if ( ligne_del.indexOf( {{i}} ) < 0 ) {
+                  {% for key, value in result[0][i].iteritems() %}
+                    dataset1.push("{{ value[0] }}");
+                  {% endfor %}
+                }
+              {% endif %}
+            {% endfor %}
+
+            // Largeur et hauteur
+            const w = 1200;
+            const h = 600;
+            const padding = 40; // marge pour pas que le rond sorte du SVG
+
+            let y_min = 0;
+            if(d3.min(dataset, function(d) {return d[1]})<0){
+              y_min = d3.min(dataset, function(d) {return d[1]}) - 0};
+              // j'aimerai un min rond...
+
+            let yScale = d3.scaleLinear()
+                           .domain([
+                             y_min,
+                             d3.max(dataset, function(d) {return d[1]})
+                           ])
+                           .range([h - (5*padding), padding]);
+
+            let xScale = d3.scaleBand()
+              .domain(dataset1)
+              .range([padding, w-padding]);
+
+            // Définit l'axe X
+            let xAxis = d3.axisBottom(xScale);
+
+            // Définit l'axe Y
+            let yAxis = d3.axisLeft(yScale)
+                          .ticks(10);
+            console.log(dataset1.length)
+            // Crée l'élément SVG
+            let svg = d3.select("div1")
+                        .append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+
+            // ajout axe X
+            svg.append("g")
+               .attr("transform", "translate(0," + (h - (5*padding)) + ")")
+               .call(xAxis)
+                .selectAll("text")
+                .style('text-anchor', 'start')
+                .attr('transform', 'rotate(45 -2 10)');
+
+            // ajout axe Y
+            svg.append("g")
+               .attr("transform", "translate(" + padding + ",0)")
+               .call(yAxis);
+
+            svg.selectAll("text")
+               .data(titre_graph)
+               .enter()
+               .append("text")
+               .text("Titre : "+titre_graph)
+               .attr("x", 10)
+               .attr("y", 20)
+                 .attr("font-family", "sans-serif")
+                 .attr("font-size", "21px")
+                 .attr("fill", "red");
+
+            let infos = svg.append("text")
+                           .attr("id", "infos")
+                           .attr("x", 800)
+                           .attr("y", 40);
+
+            let with_rect = ((w -(2*padding))/dataset.length)-
+              (padding/dataset.length);
+            let echelleCouleurs = d3.scaleOrdinal(d3.schemeCategory20);
+
+            svg.selectAll("rect")
+               .data(dataset)
+               .enter()
+               .append("rect")
+              .attr("x", function(d) { return xScale(d[0])+w/(2*dataset.length)-
+                with_rect/2; })
+              .attr("width", with_rect)
+              .attr("y", function(d) { return yScale(d[1]); })
+              .attr("height", function(d) { return h -
+                (5*padding) - yScale(d[1]); })
+              .style("fill",function(d){return echelleCouleurs(d[0]);})
+                // ajout du hover
+                .on("mouseover",function(d){
+                  infos.text( d[0]+", "+d[1])
+                       .style("fill", echelleCouleurs(d[0]));
+                })
+                .on("mouseout",function(d){
+                    infos.text("");
+                });
+          }
+        }
+      </script>
+    </div>
+    <!-- Comme la page d'accueil -->
+    <div class="jumbotron text-center">
+      <h3>Convertir une nouvelle image :</h3>
+    </div>
+    <div class="span12 centered-text">
+      <!-- affiche la fenetre patienter -->
+      <!-- The Modal -->
+      <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h3>Veuillez patienter...</h3>
+          <img src="http://www.gif-maniac.com/gifs/51/50646.gif"
+          alt="http://www.gif-maniac.com/gifs/51/50646.gif" class="transparent">
         </div>
-        <br /><br />
-        <!-- Signature -->
-        <div class="container">
-            <div class="row">
-                <address>Fait le Semestre de Printemps 2017<br>
-                par Xavier Barros.</address> 
-            </div> 
-        </div>
-    </body>
+      </div>
+      <!-- bouton pour lancer l'application -->
+      <form onsubmit = "return OpenModal();"
+      action = "http://localhost:5000/table" method = "POST"
+      enctype = "multipart/form-data">
+        <br />
+        <section class="invert">
+        <input type = "image" src="{{url_for('static', filename='test.jpg')}}"/>
+        </section>
+      </form>
+      <p>Choisir un fichier 'jpg' ou 'png' à convertir en tableau excel</p>
+      <p>/!\ Ceci peut prendre quelques minutes... /!\</p>
+    </div>
+    <br /><br />
+    <!-- Signature -->
+    <div class="container">
+      <div class="row">
+        <address>Fait le Semestre de Printemps 2017<br>
+        par Xavier Barros.</address>
+      </div>
+    </div>
+    <!-- script qui affiche la fenetre patienter -->
+    <script>
+      // Get the modal
+      var modal = document.getElementById('myModal');
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+      // When the user clicks the button, open the modal
+      function OpenModal() {
+        modal.style.display = "block";
+      }
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+    </script>
+  </body>
 </html>
